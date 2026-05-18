@@ -20,8 +20,8 @@ TFT_eSprite logoCanvas = TFT_eSprite(&tft);
 OneButton btn;
 OneButton btn2;
 
-Animation animation = ANIMATION_BEER;
-Status status = MENU;
+RTC_DATA_ATTR Animation animation = ANIMATION_BEER;
+RTC_DATA_ATTR Status status = MENU;
 
 char letters[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 const int lenght = 35;
@@ -43,7 +43,7 @@ static void buttonPressed();
 static void buttonLongPressed();
 static void startSleep();
 
-int currentMenu = 0;
+RTC_DATA_ATTR int currentMenu = 0;
 
 void setup() {
     randomSeed(esp_random());
@@ -66,6 +66,11 @@ void setup() {
     logoCanvas.createSprite(ttatw, ttath);
     logoCanvas.setSwapBytes(false);
     logoCanvas.pushImage(0, 0, ttatw, ttath, ttat);
+
+    pinMode(14, INPUT_PULLUP);
+    while (digitalRead(14) == LOW) {
+        delay(10);
+    }
 
     btn.setup(
         0,
@@ -120,9 +125,9 @@ void setup() {
     }
 
     textAnim.speed = 3;
-    textAnim.x = 0;
+    textAnim.x = 320;
     textAnim.y = 70;
-    textAnim.text = "PLACEHOLDER TEXT";
+    textAnim.text = "bALEK EKS!";
 
     kocka[0].x=66;
     kocka[0].y=50;
@@ -158,6 +163,12 @@ void loop() {
                 case ANIMATION_TEXT:
                         drawText(textAnim);
                         break;
+                case ANIMATION_TEMPUS:
+                        drawTempus(logo, 1);
+                        break;
+                case ANIMATION_DVD:
+                        drawDVD(logo, 1);
+                        break;
                 default:
                         break;
                 }
@@ -177,7 +188,7 @@ void loop() {
 
 static void buttonPressed() {
     if (status == ANIMATIONS) {
-        int nextNum = ((int)animation+1) % 4;
+        int nextNum = ((int)animation+1) % 6;
         animation = (Animation)nextNum;
     }else if (status == MENU) {
         if (currentMenu == 0) {

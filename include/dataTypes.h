@@ -7,7 +7,9 @@ enum Animation {
     ANIMATION_BEER,
     ANIMATION_MATRIX,
     ANIMATION_TTAT,
-    ANIMATION_TEXT
+    ANIMATION_TEXT,
+    ANIMATION_TEMPUS,
+    ANIMATION_DVD
 };
 
 enum Status {
