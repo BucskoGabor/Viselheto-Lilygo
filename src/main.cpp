@@ -42,6 +42,8 @@ const int refreshRate = 1000/37;
 static void buttonPressed();
 static void buttonLongPressed();
 static void startSleep();
+static void screenOff();
+static void initAnimations();
 
 RTC_DATA_ATTR int currentMenu = 0;
 
@@ -86,56 +88,10 @@ void setup() {
 
     btn2.attachClick(buttonPressed);
     btn2.attachLongPressStart(buttonLongPressed);
+    btn.attachClick(screenOff);
     btn.attachLongPressStart(startSleep);
 
-
-    //If btn on pin 0 is nonfunctional then use this to initiate deep sleep
-    //Remember to change the startSleep function at the bottom
-    //btn2.attachDoubleClick(startSleep);
-
-    for (int i = 0; i < size ; i++) {
-        beers[i].x = random(xmin,xmax);
-        beers[i].y = random(ymin,ymax);
-        beers[i].dirX = random(-3,3);
-        beers[i].dirY = random(-3,3);
-        if (beers[i].dirX == 0) {
-            beers[i].dirX++;
-        }
-        if (beers[i].dirY == 0) {
-            beers[i].dirY++;
-        }
-    }
-    for (int i = 0; i < size ; i++) {
-        logo[i].x = random(xmin,xmaxlogo);
-        logo[i].y = random(ymin,ymax);
-        logo[i].dirX = random(-3,3);
-        logo[i].dirY = random(-3,3);
-        if (logo[i].dirX == 0) {
-            logo[i].dirX++;
-        }
-        if (logo[i].dirY == 0) {
-            logo[i].dirY++;
-        }
-    }
-    for (int i = 0; i < matrixSize; i++) {
-        mat[i].x = 10 * i;
-        mat[i].y = random(1,150);
-        mat[i].speed = random(4,15);
-        mat[i].length = random(6,11);
-    }
-
-    textAnim.speed = 3;
-    textAnim.x = 320;
-    textAnim.y = 70;
-    textAnim.text = "bALEK EKS!";
-
-    kocka[0].x=66;
-    kocka[0].y=50;
-    kocka[0].side=6;
-
-    kocka[1].x=66*3;
-    kocka[1].y=50;
-    kocka[1].side=6;
+    initAnimations();
 }
 
 
@@ -181,7 +137,6 @@ void loop() {
         }
 
         lastUpdate = currentTime;
-
     }
 
 }
@@ -220,24 +175,73 @@ static void buttonLongPressed() {
 
 }
 
-static void startSleep() {
+static void screenOff() {
+    canvas.fillSprite(TFT_BLACK);
+    canvas.pushSprite(0, 0);
     digitalWrite(TFT_BL, LOW);
-    tft.writecommand(ST7789_SLPIN);
-    esp_sleep_enable_ext0_wakeup(GPIO_NUM_14, 0);
-    delay(150);
-    esp_deep_sleep_start();
-}
 
-//If double click is used, use this function instead
-/*
-static void startSleep() {
-    digitalWrite(TFT_BL, LOW);
-    tft.writecommand(ST7789_SLPIN);
-    esp_sleep_enable_ext0_wakeup(GPIO_NUM_14, 0);
     while (digitalRead(14) == HIGH) {
         delay(20);
     }
+    while (digitalRead(14) == LOW) {
+        delay(10);
+    }
+    initAnimations();
+    digitalWrite(TFT_BL, HIGH);
+}
+
+static void initAnimations() {
+    for (int i = 0; i < size ; i++) {
+        beers[i].x = random(xmin,xmax);
+        beers[i].y = random(ymin,ymax);
+        beers[i].dirX = random(-3,3);
+        beers[i].dirY = random(-3,3);
+        if (beers[i].dirX == 0) {
+            beers[i].dirX++;
+        }
+        if (beers[i].dirY == 0) {
+            beers[i].dirY++;
+        }
+    }
+    for (int i = 0; i < size ; i++) {
+        logo[i].x = random(xmin,xmaxlogo);
+        logo[i].y = random(ymin,ymax);
+        logo[i].dirX = random(-3,3);
+        logo[i].dirY = random(-3,3);
+        if (logo[i].dirX == 0) {
+            logo[i].dirX++;
+        }
+        if (logo[i].dirY == 0) {
+            logo[i].dirY++;
+        }
+    }
+    for (int i = 0; i < matrixSize; i++) {
+        mat[i].x = 10 * i;
+        mat[i].y = random(1,150);
+        mat[i].speed = random(4,15);
+        mat[i].length = random(6,11);
+    }
+
+    textAnim.speed = 5;
+    textAnim.x = 320;
+    textAnim.y = 70;
+    textAnim.text = "bALEK EKS!";
+
+    kocka[0].x=66;
+    kocka[0].y=50;
+    kocka[0].side=6;
+
+    kocka[1].x=66*3;
+    kocka[1].y=50;
+    kocka[1].side=6;
+}
+
+static void startSleep() {
+    canvas.fillSprite(TFT_BLACK);
+    canvas.pushSprite(0, 0);
+    digitalWrite(TFT_BL, LOW);
+    tft.writecommand(ST7789_SLPIN);
+    esp_sleep_enable_ext0_wakeup(GPIO_NUM_14, 0);
     delay(150);
     esp_deep_sleep_start();
 }
-*/
